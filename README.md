@@ -10,12 +10,11 @@ run via WebAssembly using [WAForth](https://github.com/remko/waforth)
 
 We have a snake that moves around a board.
 
-`$pnpm start` runs it.
+`$ npm start` runs it. Or it's on github pages -- find the link on the github project page.
 
 TODO - and I in no way promise to get around to any of these:
 
    - game over if you leave the board (no more warping)
    - apples and snake-growing
    - presentational niceties
-   - deploy to a public site
      
