@@ -45,7 +45,7 @@ VARIABLE direction
   93 snake-offset !  \ Set snake offset to 93
   100 0 DO
     I 93 >= I 97 <= AND IF
-      160 I - I snake + C!  \ Set snake elements 93..97 to 1
+      156 I - I snake + C!  \ Set snake elements 93..97 
     ELSE
       0 I snake + C!  \ Set all other elements to 0
     THEN
