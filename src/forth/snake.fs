@@ -53,8 +53,36 @@ VARIABLE direction
   LOOP
 ;
 
+: snake-segment@ ( n -- n )
+    snake-offset @ + 100 MOD snake + C@
+;
+
+: current-head@ ( -- n )
+    0 snake-segment@
+;
+
+: is-snake ( n -- f )
+  FALSE
+  snake-length @ 0 DO
+    OVER I snake-segment@ =
+    IF
+      DROP TRUE
+      LEAVE
+    THEN
+  LOOP
+  NIP
+;
+
 : init-apple ( -- )
-  RANDOM 100 MOD apple C!
+  BEGIN
+    RANDOM DUP ." rnd " . 100 MOD
+    DUP is-snake
+  WHILE
+    ." Not " DUP . CR
+    DROP
+  REPEAT
+    ." Apple " DUP . CR
+  apple C!
 ;
 
 : init-game ( -- )
@@ -64,14 +92,6 @@ VARIABLE direction
   FALSE game-over !
   1 direction !  \ Start moving right
 ; 
-
-: snake-segment@ ( n -- n )
-    snake-offset @ + 100 MOD snake + C@
-;
-
-: current-head@ ( -- n )
-    0 snake-segment@
-;
 
 : top-edge? ( oldpos newpos -- f )
    100 >=
@@ -112,7 +132,6 @@ VARIABLE direction
     2DUP edge? IF
        ." Game over! "
        1 game-over C!
-       gamestate 101 shar
        DROP DROP
     ELSE
        NIP
@@ -139,7 +158,7 @@ VARIABLE direction
 
 : update-grid ( -- )
   clear-grid
-  1 apple @ grid + C!
+  2 apple @ grid + C!
   snake-length @ 0 DO
     I snake-segment@
     grid +      \ Add address in the grid
