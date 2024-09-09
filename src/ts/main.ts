@@ -1,10 +1,9 @@
 import WAForth from "waforth";
+import { drawState, isMobile } from "./display";
 import { SwipeHandler } from "./swipeHandler";
 
-const GRID_SIZE = 10;
-const CELL_SIZE = 40;
+const FRAME_TIME = 200;
 
-const FRAME_TIME = 250;
 (async () => {
   // We assume index.html has the right elements
   const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
@@ -20,33 +19,14 @@ const FRAME_TIME = 250;
     const response = await fetch("snake.fs");
     const snakeCode = await response.text();
     forth.interpret(snakeCode);
-    console.log("Snake game code loaded successfully");
   } catch (error) {
     console.error("Error loading snake game code:", error);
   }
 
-  function drawState(gridState: Uint8Array) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    gridState.forEach((value, index) => {
-      const x = (index % GRID_SIZE) * CELL_SIZE;
-      const y = Math.floor(index / GRID_SIZE) * CELL_SIZE;
-
-      if (value === 0) {
-        ctx.fillStyle = "white";
-      } else {
-        ctx.fillStyle = value === 1 ? "darkgreen" : "green";
-      }
-
-      ctx.fillRect(x, y, CELL_SIZE, CELL_SIZE);
-      ctx.strokeRect(x, y, CELL_SIZE, CELL_SIZE);
-    });
-  }
-
   const memory = forth.memory();
   forth.interpret("get-state-address");
-  const gridAddress = forth.pop();
-  const state = new Uint8Array(memory.buffer, gridAddress, 101);
+  const stateAddress = forth.pop();
+  const state = new Uint8Array(memory.buffer, stateAddress, 101);
 
   const startGame = () => {
     status.textContent = "";
@@ -57,7 +37,7 @@ const FRAME_TIME = 250;
       if (gameOver) return;
 
       forth.interpret("tick");
-      drawState(state.slice(1));
+      drawState(ctx, state.slice(1));
       gameOver = !!state[0];
 
       if (gameOver) {
@@ -118,12 +98,7 @@ const FRAME_TIME = 250;
 
   swipeHandler.init();
 
-  // Update initial status text based on device type
-  const isMobile =
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    );
-  status.textContent = isMobile ? "Tap to begin" : "Press Space to start";
+  status.textContent = isMobile() ? "Tap to begin" : "Press Space to start";
 
   // Clean up function (call this when the game ends if needed)
   const cleanup = () => {
