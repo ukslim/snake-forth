@@ -41,7 +41,11 @@ const FRAME_TIME = 200;
       gameOver = !!state[0];
 
       if (gameOver) {
-        status.textContent = "Game Over - Tap to restart";
+        forth.interpret("score?");
+        const score = forth.pop();
+        status.textContent = `Game Over - Score: ${score} - ${
+          isMobile() ? "Tap" : "Space"
+        } to restart`;
       } else {
         setTimeout(gameLoop, FRAME_TIME);
       }

@@ -172,6 +172,10 @@ VARIABLE direction
 : get-state-address ( -- addr )
   gamestate ;
 
+: score? ( -- )
+   snake-length @ 5 - 
+;
+
 init-game
 
 
