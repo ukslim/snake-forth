@@ -42,10 +42,10 @@ VARIABLE direction
 
 : init-snake ( -- )
   5 snake-length !  \ Set snake length to 5
-  93 snake-offset !  \ Set snake offset to 93
+  0 snake-offset !  \ Set snake offset to 0
   100 0 DO
-    I 93 >= I 97 <= AND IF
-      156 I - I snake + C!  \ Set snake elements 93..97 
+    I 0 >= I 4 <= AND IF
+      63 I - I snake + C!  \ Set snake elements 0..4 to coords 6,3 6,4 6,5 6,6 6,7
     ELSE
       0 I snake + C!  \ Set all other elements to 0
     THEN
