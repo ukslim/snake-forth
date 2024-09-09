@@ -14,6 +14,7 @@ gamestate CONSTANT game-over
 VARIABLE snake-length
 VARIABLE snake-offset 
 CREATE snake 100 ALLOT  \ Each byte is a position on the grid as 10x + y
+VARIABLE apple
 VARIABLE direction
 
 : direction! ( n -- )
@@ -52,9 +53,14 @@ VARIABLE direction
   LOOP
 ;
 
+: init-apple ( -- )
+  RANDOM 100 MOD apple C!
+;
+
 : init-game ( -- )
   clear-grid
   init-snake
+  init-apple
   FALSE game-over !
   1 direction !  \ Start moving right
 ; 
@@ -63,7 +69,7 @@ VARIABLE direction
     snake-offset @ + 100 MOD snake + C@
 ;
 
-: current-head ( -- n )
+: current-head@ ( -- n )
     0 snake-segment@
 ;
 
@@ -113,8 +119,12 @@ VARIABLE direction
        snake-shift
        snake-offset @ snake + C!  \ Store new head position in snake at the new offset
     THEN
+    current-head@ apple @ = IF
+       snake-length @ 1+ snake-length !
+       init-apple
+    THEN
     snake-length @ 1 DO
-       0 snake-segment@
+       current-head@
        I snake-segment@
       = IF
             1 game-over C!
@@ -124,11 +134,12 @@ VARIABLE direction
 ;
 
 : move-snake ( -- )
-  current-head
+  current-head@
   set-new-head ;
 
 : update-grid ( -- )
   clear-grid
+  1 apple @ grid + C!
   snake-length @ 0 DO
     I snake-segment@
     grid +      \ Add address in the grid
