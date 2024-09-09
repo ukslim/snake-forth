@@ -10,6 +10,4 @@ run via WebAssembly using [WAForth](https://github.com/remko/waforth)
 
 We have a snake that moves around a board.
 
-`$ npm start` runs it. Or it's on github pages -- find the link on the github project page.
-
-TODO - apples and snake-growing
+`$ npm start` runs it. Or it's on github pages -- [here](https://ukslim.github.io/snake-forth/)

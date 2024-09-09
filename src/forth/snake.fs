@@ -73,17 +73,25 @@ VARIABLE direction
   NIP
 ;
 
+: tangled? ( -- f )
+  current-head@
+  FALSE
+  snake-length @ 1 DO
+    OVER I snake-segment@ =
+    IF
+       DROP TRUE
+       LEAVE
+    THEN
+  LOOP
+  NIP
+;
+
 : init-apple ( -- )
   BEGIN
-    RANDOM DUP ." rnd " . 100 MOD
-    DUP is-snake
-  WHILE
-    ." Not " DUP . CR
-    DROP
-  REPEAT
-    ." Apple " DUP . CR
-  apple C!
-;
+    RANDOM 100 MOD
+    DUP is-snake 0=
+  UNTIL
+  apple C! ;
 
 : init-game ( -- )
   clear-grid
@@ -104,7 +112,8 @@ VARIABLE direction
 ;
 
 : side-edge? ( oldpos newpos -- f )
-    2DUP - ABS 1 > IF
+    2DUP 
+    - ABS 1 > IF
       DROP DROP FALSE \ changing rows is only an edge on a sideways move
     ELSE
       10 / SWAP 10 / \ get rows
@@ -138,10 +147,6 @@ VARIABLE direction
        snake-shift
        snake-offset @ snake + C!  \ Store new head position in snake at the new offset
     THEN
-    current-head@ apple @ = IF
-       snake-length @ 1+ snake-length !
-       init-apple
-    THEN
     snake-length @ 1 DO
        current-head@
        I snake-segment@
@@ -152,9 +157,28 @@ VARIABLE direction
     LOOP
 ;
 
+: eaten-apple? ( -- f )
+  current-head@ apple @ =
+;
+
+: grow-if-eaten ( -- )
+  eaten-apple? IF
+    snake-length @ 1+ snake-length !
+    init-apple
+  THEN
+;
+
+: die-if-tangled ( -- )
+  tangled? IF
+    1 game-over C!
+  THEN
+;
+
 : move-snake ( -- )
   current-head@
-  set-new-head ;
+  set-new-head 
+  grow-if-eaten
+;
 
 : update-grid ( -- )
   clear-grid
