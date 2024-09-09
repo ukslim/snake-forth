@@ -56,8 +56,8 @@ VARIABLE direction
   clear-grid
   init-snake
   FALSE game-over !
-  1 direction !
-  ;  \ Start moving right
+  1 direction !  \ Start moving right
+; 
 
 : snake-segment@ ( n -- n )
     snake-offset @ + 100 MOD snake + C@
@@ -113,6 +113,14 @@ VARIABLE direction
        snake-shift
        snake-offset @ snake + C!  \ Store new head position in snake at the new offset
     THEN
+    snake-length @ 1 DO
+       0 snake-segment@
+       I snake-segment@
+      = IF
+            1 game-over C!
+            LEAVE
+       THEN
+    LOOP
 ;
 
 : move-snake ( -- )
